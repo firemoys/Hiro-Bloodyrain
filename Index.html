@@ -1,0 +1,1086 @@
+<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><title>Ficha de Personagem — D&D 3.5</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&amp;family=Special+Elite&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet"><style>
+  :root{
+    --bg: #200a0a;
+    --panel: #2d1011;
+    --panel-2: #361513;
+    --ink: #e4ddc9;
+    --ink-dim: #ab9c91;
+    --rust: #9ca1a4;
+    --blood: #6e1417;
+    --blood-bright: #cdd1d3;
+    --blood-deep: #2a0808;
+    --olive: #3c3e40;
+    --olive-dark: #232527;
+    --line: rgba(156,161,164,0.3);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 10% 0%, rgba(156,161,164,0.10), transparent 50%),
+      radial-gradient(ellipse at 95% 100%, rgba(110,20,23,0.22), transparent 50%),
+      var(--bg);
+    color: var(--ink);
+    font-family:'Special Elite', monospace;
+    padding: 30px 14px 90px;
+  }
+
+  .toolbar{
+    max-width: 920px;
+    margin: 0 auto 20px;
+    display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
+  }
+  .toolbar button{
+    font-family:'Oswald', sans-serif;
+    font-weight:600;
+    font-size:0.78rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    background: var(--blood-deep);
+    color: var(--ink);
+    border: 1px solid var(--blood-bright);
+    padding: 9px 18px;
+    cursor:pointer;
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  }
+  .toolbar button:hover{ background: var(--blood); }
+
+  .book{ max-width: 920px; margin: 0 auto; }
+
+  .page{
+    background: linear-gradient(160deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--rust);
+    box-shadow: 0 0 0 4px var(--blood-deep), 0 20px 50px rgba(0,0,0,0.65);
+    margin-bottom: 30px;
+    padding: 32px 32px 28px;
+    position: relative;
+    clip-path: polygon(0 14px, 14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  }
+  .page::before{
+    content:"";
+    position:absolute; inset:7px;
+    border: 1px dashed rgba(168,28,28,0.3);
+    pointer-events:none;
+  }
+
+  .page-title{
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    text-align:center;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: var(--blood-bright);
+    margin: 0 0 20px;
+    position:relative;
+  }
+  .page-title::before, .page-title::after{ content:"◆ "; opacity:0.6; }
+
+  .divider{
+    display:flex; align-items:center; gap:10px;
+    margin: 24px 0 16px;
+    color: var(--rust);
+    opacity:0.8;
+  }
+  .divider::before, .divider::after{
+    content:""; flex:1; height:2px;
+    background: repeating-linear-gradient(90deg, var(--rust) 0 6px, transparent 6px 10px);
+  }
+
+  h1.name{
+    font-family:'Bebas Neue', sans-serif;
+    text-align:center;
+    font-size: 3.2rem;
+    letter-spacing: 4px;
+    color: var(--ink);
+    margin: 0 0 2px;
+    outline:none;
+    text-shadow: 2px 2px 0 var(--blood-deep);
+  }
+  .subname{
+    text-align:center;
+    font-family:'Oswald', sans-serif;
+    font-size:0.78rem;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color: var(--blood-bright);
+    outline:none;
+    margin-bottom: 24px;
+  }
+
+  .top-row{ display:flex; gap: 28px; flex-wrap:wrap; }
+
+  .portrait-frame{
+    width:180px; height:230px;
+    border: 2px solid var(--rust);
+    background: var(--olive-dark);
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 0 1px var(--blood-deep), inset 0 0 25px rgba(0,0,0,0.6);
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    color: var(--ink-dim);
+    font-family:'Oswald', sans-serif;
+    font-size:0.7rem;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    flex-shrink:0;
+    clip-path: polygon(0 10px, 10px 0, 100% 0, 100% 100%, 0 100%);
+  }
+  .portrait-frame:hover{ box-shadow: 0 0 14px var(--blood-bright), inset 0 0 25px rgba(0,0,0,0.6); }
+  .portrait-frame span{ padding:0 14px; }
+  .portrait-frame input{ display:none; }
+
+  .info-grid{
+    flex:1; min-width:260px;
+    display:grid; grid-template-columns: 1fr 1fr;
+    gap: 4px 24px; align-content:start;
+  }
+  .field{
+    display:flex; gap:6px; padding:4px 0;
+    border-bottom: 1px dotted var(--line);
+    font-size:0.92rem; align-items:baseline;
+  }
+  .field .k{
+    font-family:'Oswald', sans-serif;
+    font-size:0.66rem; letter-spacing:1px; text-transform:uppercase;
+    color: var(--blood-bright); white-space:nowrap;
+  }
+  .field .v{ flex:1; outline:none; color: var(--ink); min-height: 1.2em; }
+
+  .box-row{ display:flex; gap:20px; margin-top:20px; flex-wrap:wrap; }
+  .textbox{
+    flex:1; min-width:220px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--line);
+    padding: 12px 14px; min-height:90px;
+    font-size:0.92rem; line-height:1.5; outline:none;
+  }
+  .textbox:focus{ background: rgba(0,0,0,0.42); border-color: var(--blood-bright); }
+  .box-label{
+    font-family:'Oswald', sans-serif;
+    font-size:0.7rem; letter-spacing:2px; text-transform:uppercase;
+    color: var(--blood-bright); margin-bottom:6px;
+  }
+
+  .stat-strip{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:6px; }
+  .stat-box{
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--rust);
+    min-width: 88px; text-align:center;
+    padding: 8px 10px 6px;
+    clip-path: polygon(0 6px, 6px 0, 100% 0, 100% 100%, 0 100%);
+  }
+  .stat-box .val{ font-family:'Bebas Neue', sans-serif; font-size:1.7rem; color: var(--ink); outline:none; letter-spacing:1px; }
+  .stat-box .lbl{ font-family:'Oswald', sans-serif; font-size:0.6rem; letter-spacing:1px; text-transform:uppercase; color: var(--ink-dim); }
+
+  table{ width:100%; border-collapse: collapse; font-size:0.85rem; }
+  th, td{ border: 1px solid var(--line); padding: 6px 8px; text-align:center; }
+  th{
+    font-family:'Oswald', sans-serif; font-size:0.62rem; letter-spacing:0.6px;
+    text-transform:uppercase; color: var(--blood-bright);
+    background: rgba(125,15,15,0.18);
+  }
+  td[contenteditable]{ outline:none; }
+  td[contenteditable]:focus{ background: rgba(168,28,28,0.14); }
+  td.lbl-cell{ text-align:left; font-family:'Oswald',sans-serif; font-size:0.74rem; color: var(--ink); }
+  .table-wrap{ overflow-x:auto; margin-bottom:10px; }
+
+  .abilities{ display:grid; grid-template-columns: repeat(7,1fr); gap:8px; margin:10px 0 6px; }
+  .ability{
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--rust);
+    text-align:center; padding:6px 2px 8px;
+    clip-path: polygon(0 5px, 5px 0, 100% 0, 100% 100%, 0 100%);
+  }
+  .ability .name{ font-family:'Oswald',sans-serif; font-size:0.6rem; letter-spacing:0.5px; text-transform:uppercase; color: var(--blood-bright); }
+  .ability .score{ font-family:'Bebas Neue',sans-serif; font-size:1.6rem; outline:none; color:var(--ink); }
+  .ability .mod{ font-size:0.72rem; background: var(--blood-deep); color: var(--ink); border-radius:10px; display:inline-block; padding:1px 8px; outline:none; }
+
+  .tag-list{ list-style:none; margin:0; padding:0; }
+  .tag-list li{
+    display:flex; align-items:center; gap:8px; padding:5px 0;
+    border-bottom: 1px dotted var(--line); font-size:0.9rem;
+  }
+  .tag-list li .star{ color: var(--blood-bright); flex-shrink:0; }
+  .tag-list li .txt{ flex:1; outline:none; }
+  .add-row{
+    margin-top:8px;
+    font-family:'Oswald', sans-serif; font-size:0.66rem; letter-spacing:1.5px; text-transform:uppercase;
+    background:none; border: 1px dashed var(--rust); color: var(--ink-dim);
+    padding:5px 10px; cursor:pointer;
+  }
+  .add-row:hover{ background: rgba(168,28,28,0.12); color: var(--ink); }
+
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:26px; }
+  .three-col{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+
+  @media (max-width:720px){
+    .two-col, .three-col{ grid-template-columns:1fr; }
+    .info-grid{ grid-template-columns:1fr; }
+    .abilities{ grid-template-columns: repeat(4,1fr); }
+  }
+
+  .slots-row{ display:flex; flex-wrap:wrap; gap:16px; padding:4px 0 10px; }
+  .slot-group{ text-align:center; min-width:60px; }
+  .slot-group .lvl{
+    font-family:'Oswald', sans-serif; font-size:0.65rem; letter-spacing:1px;
+    color: var(--blood-bright); text-transform:uppercase;
+  }
+  .pip{
+    width:15px; height:15px;
+    border: 1.5px solid var(--rust);
+    border-radius:50%;
+    display:inline-block;
+    margin:3px 2px 0;
+    cursor:pointer;
+  }
+  .pip.filled{ background: var(--blood-bright); }
+  .pip-add{
+    display:block; margin: 4px auto 0;
+    width:18px; height:18px; line-height:14px;
+    background:none; border: 1px dashed var(--rust);
+    color: var(--ink-dim); font-size:0.7rem;
+    cursor:pointer; border-radius:3px;
+  }
+  .pip-add:hover{ background: rgba(156,161,164,0.12); color: var(--ink); }
+
+  .npc-thumb{
+    width:52px; height:52px;
+    border: 2px solid var(--rust);
+    background: var(--olive-dark);
+    background-size:cover; background-position:center;
+    cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:0.55rem; color: var(--ink-dim); flex-shrink:0;
+    clip-path: polygon(0 6px, 6px 0, 100% 0, 100% 100%, 0 100%);
+  }
+  .npc-thumb input{ display:none; }
+
+  footer{
+    text-align:center;
+    font-family:'Oswald', sans-serif;
+    font-size:0.7rem; letter-spacing:3px; text-transform:uppercase;
+    color: var(--blood-bright); opacity:0.75;
+    padding: 10px 0 30px;
+  }
+
+  @media print{
+    body{ background:white; padding:0; }
+    .toolbar{ display:none; }
+    .page{ box-shadow:none; page-break-after: always; }
+  }
+</style></head><body><div class="toolbar">
+  <button onclick="window.print()">Imprimir / Salvar como PDF</button>
+  <button onclick="saveHTML()">Baixar ficha com edições</button>
+  <button onclick="addRow('talentos-classe')">+ Talento de Classe</button>
+  <button onclick="addRow('tabela-classe')">+ Item Tabela de Classe</button>
+  <button onclick="addRow('traco-racial')">+ Traço Racial</button>
+  <button onclick="addRow('niveis')">+ Nível</button>
+  <button onclick="addRow('fetiches')">+ Fetiche</button>
+  <button onclick="addRow('truques')">+ Truque</button>
+  <button onclick="addTableRow('equip-table',4)">+ Item (Equip.)</button>
+  <button onclick="addTableRow('loot-table',4)">+ Item (Encontrado)</button>
+  <button onclick="addNPCRow()">+ NPC</button>
+</div><div class="book" id="sheet">
+
+  <!-- PAGE 1 — IDENTIDADE -->
+  <div class="page">
+    <div class="page-title">Dossiê · Identidade</div>
+    <h1 class="name" contenteditable="true">Nome do Personagem</h1>
+    <div class="subname" contenteditable="true">Raça · Classe · Facção</div>
+
+    <div class="top-row">
+      <label class="portrait-frame" id="frame-main" for="upload-main">
+        <span>cole aqui seu retrato</span>
+        <input type="file" id="upload-main" accept="image/*" onchange="loadImage(this,'frame-main')">
+      </label>
+
+      <div class="info-grid">
+        <div class="field"><span class="k">Nome</span><span class="v" contenteditable="true">Hiro Bloodyrain&nbsp;</span></div>
+        <div class="field"><span class="k">Raça (Povo)</span><span class="v" contenteditable="true">Meio gigante</span></div>
+        <div class="field"><span class="k">Classe e Nível</span><span class="v" contenteditable="true">Bardo/nível 1</span></div>
+        <div class="field"><span class="k">Tendência</span><span class="v" contenteditable="true">Caótico Neutro</span></div>
+        <div class="field"><span class="k">Tamanho</span><span class="v" contenteditable="true">Grande</span></div>
+        <div class="field"><span class="k">Altura</span><span class="v" contenteditable="true">2,74m</span></div>
+        <div class="field"><span class="k">Peso</span><span class="v" contenteditable="true">200,8kg</span></div>
+        <div class="field"><span class="k">Número mágico</span><span class="v" contenteditable="true">26</span></div>
+        <div class="field"><span class="k">Busto</span><span class="v" contenteditable="true">165</span></div>
+        <div class="field"><span class="k">Cintura</span><span class="v" contenteditable="true">105</span></div>
+        <div class="field"><span class="k">Quadril</span><span class="v" contenteditable="true">130</span></div>
+        <div class="field"><span class="k">Deslocamento</span><span class="v" contenteditable="true">9m</span></div>
+        <div class="field"><span class="k">Idade</span><span class="v" contenteditable="true">27</span></div>
+        <div class="field"><span class="k">Sexo</span><span class="v" contenteditable="true">Masculino</span></div>
+        <div class="field"><span class="k">Reino</span><span class="v" contenteditable="true">-</span></div>
+        <div class="field"><span class="k">Divindade</span><span class="v" contenteditable="true">Sou</span></div>
+        <div class="field"><span class="k">Opção Sexual</span><span class="v" contenteditable="true">Bissexual</span></div>
+        <div class="field"><span class="k">Idiomas</span><span class="v" contenteditable="true">Comum/Humano</span></div>
+        <div class="field"><span class="k">XP</span><span class="v" contenteditable="true">0/1000</span></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="box-row">
+      <div style="flex:1; min-width:220px;">
+        <div class="box-label">Descrição</div>
+        <div class="textbox" contenteditable="true"></div>
+      </div>
+      <div style="flex:1; min-width:220px;">
+        <div class="box-label">Personalidade</div>
+        <div class="textbox" contenteditable="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2 — COMBATE -->
+  <div class="page">
+    <div class="page-title">Dossiê · Corpo &amp; Combate</div>
+
+    <div class="stat-strip">
+      <div class="stat-box"><div class="val" contenteditable="true">16</div><div class="lbl">Pontos de Vida</div></div>
+      <div class="stat-box"><div class="val" contenteditable="true"></div><div class="lbl">Dano p/ Contusão</div></div>
+      <div class="stat-box"><div class="val" contenteditable="true">+1</div><div class="lbl">Iniciativa</div></div>
+      <div class="stat-box"><div class="val" contenteditable="true">+1</div><div class="lbl">Bônus Base Ataque</div></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="box-label">Classe de Armadura (C.A.)</div>
+    <div class="table-wrap">
+      <table>
+        <tbody><tr><th>Total</th><th>Armadura</th><th>Escudo</th><th>Des</th><th>Tamanho</th><th>Natural</th><th>Deflexão</th><th>Outros</th><th>Toque</th><th>Surpresa</th></tr>
+        <tr>
+          <td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+        </tr>
+      </tbody></table>
+    </div>
+
+    <div class="two-col" style="margin-top:18px;">
+      <div>
+        <div class="box-label">Resistências</div>
+        <div class="table-wrap">
+          <table>
+            <tbody><tr><td class="lbl-cell">Fortitude</td><td contenteditable="true">+6/+8</td></tr>
+            <tr><td class="lbl-cell">Reflexo</td><td contenteditable="true">+1</td></tr>
+            <tr><td class="lbl-cell">Vontade</td><td contenteditable="true">0</td></tr>
+            <tr><td class="lbl-cell">Resistência à Magia</td><td contenteditable="true">0</td></tr>
+            <tr><td class="lbl-cell">Tolerância Sexual</td><td contenteditable="true">24</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+      <div>
+        <div class="box-label">Agarrar</div>
+        <div class="table-wrap">
+          <table>
+            <tbody><tr><th>Total BBA</th><th>Mod. For</th><th>Tamanho</th><th>Outros</th></tr>
+            <tr><td contenteditable="true">+9</td><td contenteditable="true">+4/+6</td><td contenteditable="true">+4</td><td contenteditable="true">+1</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="box-label">Corpo a Corpo</div>
+    <div class="table-wrap">
+      <table>
+        <tbody><tr><th>Arma</th><th>Ataque</th><th>Dano</th><th>Crítico</th><th>Distância</th><th>Peso</th><th>Tipo</th><th>Preço</th></tr>
+        <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="box-label" style="margin-top:14px;">À Distância</div>
+    <div class="table-wrap">
+      <table>
+        <tbody><tr><th>Arma</th><th>Ataque</th><th>Dano</th><th>Crítico</th><th>Distância</th><th>Peso</th><th>Tipo</th><th>Preço</th></tr>
+        <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="box-label" style="margin-top:14px;">Armadura / Escudo</div>
+    <div class="table-wrap">
+      <table>
+        <tbody><tr><th>Tipo</th><th>Preço</th><th>Bônus C.A.</th><th>Bônus Máx. Destreza</th><th>Penalidade Armadura</th><th>Falha Arcana</th><th>Peso</th></tr>
+        <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="box-label">Atributos</div>
+    <div class="abilities">
+      <div class="ability"><div class="name">For</div><div class="score" contenteditable="true">18</div><div class="mod" contenteditable="true">+4</div></div>
+      <div class="ability"><div class="name">Des</div><div class="score" contenteditable="true">13</div><div class="mod" contenteditable="true">+1</div></div>
+      <div class="ability"><div class="name">Con</div><div class="score" contenteditable="true">18</div><div class="mod" contenteditable="true">+4</div></div>
+      <div class="ability"><div class="name">Sab</div><div class="score" contenteditable="true">8</div><div class="mod" contenteditable="true">-1</div></div>
+      <div class="ability"><div class="name">Car</div><div class="score" contenteditable="true">15</div><div class="mod" contenteditable="true">+2</div></div>
+      <div class="ability"><div class="name">Int</div><div class="score" contenteditable="true">6</div><div class="mod" contenteditable="true">-2</div></div>
+      <div class="ability"><div class="name">Apr</div><div class="score" contenteditable="true">10</div><div class="mod" contenteditable="true">0</div></div>
+    </div>
+    <div style="font-size:0.72rem; opacity:0.6; margin-top:6px;">(+1 em For a cada Nível Par)</div>
+  </div>
+
+  <!-- PAGE 3 — TALENTOS & PERÍCIAS -->
+  <div class="page">
+    <div class="page-title">Dossiê · Dons &amp; Talentos</div>
+
+    <div class="three-col">
+      <div>
+        <div class="box-label">Talentos de Classe</div>
+        <ul class="tag-list" id="talentos-classe">
+          <li><span class="star">✦</span><span class="txt" contenteditable="true">Entrar em Fúria</span></li>
+        <li><span class="star">✦</span><span class="txt" contenteditable="true"></span></li></ul>
+        <button class="add-row" onclick="addRow('talentos-classe')">+ adicionar</button>
+      </div>
+      <div>
+        <div class="box-label">Tabela da Classe (todo nível)</div>
+        <ul class="tag-list" id="tabela-classe">
+          <li><span class="star">✦</span><span class="txt" contenteditable="true"></span></li>
+        </ul>
+        <button class="add-row" onclick="addRow('tabela-classe')">+ adicionar</button>
+      </div>
+      <div>
+        <div class="box-label">Traço Racial</div>
+        <ul class="tag-list" id="traco-racial">
+          <li><span class="star">✦</span><span class="txt" contenteditable="true"></span></li>
+        </ul>
+        <button class="add-row" onclick="addRow('traco-racial')">+ adicionar</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="three-col">
+      <div>
+        <div class="box-label">Níveis</div>
+        <ul class="tag-list" id="niveis">
+          <li><span class="star">✦</span><span class="txt" contenteditable="true">Ataque desarmado Aprimorado</span></li>
+        <li><span class="star">✦</span><span class="txt" contenteditable="true">Agarrar Aprimorado</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Ataque Poderoso</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Trespassar</span></li></ul>
+        <button class="add-row" onclick="addRow('niveis')">+ adicionar</button>
+      </div>
+      <div>
+        <div class="box-label">Fetiches</div>
+        <ul class="tag-list" id="fetiches">
+          <li><span class="star">✦</span><span class="txt" contenteditable="true">Biastofilia</span></li>
+        <li><span class="star">✦</span><span class="txt" contenteditable="true">Dominação</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Hematolagnia</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Masoquismo</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Metahomofilia</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Odaxelagnia</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Raphtophilia</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Sadismo</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Somnofilia</span></li></ul>
+        <button class="add-row" onclick="addRow('fetiches')">+ adicionar</button>
+      </div>
+      <div>
+        <div class="box-label">Truques</div>
+        <ul class="tag-list" id="truques">
+          <li><span class="star">✦</span><span class="txt" contenteditable="true">Amante Potente</span></li>
+        <li><span class="star">✦</span><span class="txt" contenteditable="true">Amante Resistente</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Recuperação Rápida</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Tão Fundo</span></li><li><span class="star">✦</span><span class="txt" contenteditable="true">Como um Livro</span></li></ul>
+        <button class="add-row" onclick="addRow('truques')">+ adicionar</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="box-label">Perícias <span style="opacity:0.6; font-size:0.68rem; text-transform:none; letter-spacing:0;">(Pontos por nível: 8)</span></div>
+    <div class="table-wrap">
+      <table id="pericias-table">
+        <tbody><tr><th>Nome</th><th>Graduação</th><th>Classe</th><th>S/T</th><th>Atributo</th><th>Mod.</th><th>Bônus</th><th>Total</th></tr>
+      </tbody><tr><td class="lbl-cell">Abrir fechaduras</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Acrobacias *</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Adestrar Animais</td>
+      <td contenteditable="true">1</td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Car</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Arte da fuga *</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Atuação</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Car</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Avaliação</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Blefar</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Car</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Cavalgar</td>
+      <td contenteditable="true">1</td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Concentração</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Con</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (arcano)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (Arquitetura &amp; Engenharia)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (Geografia)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (História)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (Local)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (Masmorras)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (Natureza)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (Nobreza e Realeza)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (Planos)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Conhecimento (Religião)</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Cura</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Sab</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Decifrar Escrita</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Diplomacia</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Apr</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Disfarces</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Car</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Equilíbrio *</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Escalar *</td>
+      <td contenteditable="true">3</td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">For</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Esconder-se *</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Falar Idioma</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Falsificação</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Furtividade *</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Hab. Sexual *</td>
+      <td contenteditable="true">4</td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Car</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Ident. Magia</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Intimidação</td>
+      <td contenteditable="true">2</td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Car</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Natação **</td>
+      <td contenteditable="true">2</td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">For</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Observar</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Sab</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Obter Informação</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Car</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Ofícios</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Operar Mecanismo</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Ouvir</td>
+      <td contenteditable="true">1</td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Sab</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Prestidigitação *</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Procurar</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Int</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Profissão</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">N</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Sab</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Saltar *</td>
+      <td contenteditable="true">3</td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">For</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Sentir Motivação</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Sab</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Sobrevivência</td>
+      <td contenteditable="true">1</td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Sab</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Usar Cordas</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Des</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr><tr><td class="lbl-cell">Usar Instrumento Mágico</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">S</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">Car</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td></tr></table>
+    </div>
+    <div style="font-size:0.72rem; opacity:0.65; margin-top:8px; line-height:1.5;">
+      *Penalidade de armadura &nbsp;·&nbsp; S/T = perícia utilizável sem treinamento &nbsp;·&nbsp; Classe = se é da própria classe (define graduação máx.)
+    </div>
+  </div>
+
+  <!-- PAGE 4 — EQUIPAMENTOS & MAGIAS -->
+  <div class="page">
+    <div class="page-title">Dossiê · Posses &amp; Feitiçaria</div>
+
+    <div class="box-label">Equipamentos &amp; Itens</div>
+    <div class="table-wrap">
+      <table id="equip-table">
+        <tbody><tr><th>U.N</th><th>Equipamentos &amp; Itens</th><th>Peso</th><th>Custo</th></tr>
+        <tr><td contenteditable="true">01</td><td contenteditable="true">Machado Grande</td><td contenteditable="true">11kg</td><td contenteditable="true">20 PO</td></tr>
+        <tr><td contenteditable="true">01</td><td contenteditable="true">Couro Batido</td><td contenteditable="true">10kg</td><td contenteditable="true">25 PO</td></tr>
+        <tr><td contenteditable="true">01</td><td contenteditable="true">Vinho(Garrafa)</td><td contenteditable="true">0,75kg</td><td contenteditable="true">10 PO</td></tr>
+        <tr><td contenteditable="true">04</td><td contenteditable="true">Carne(Pedaço</td><td contenteditable="true">1kg</td><td contenteditable="true">1PO e 2PP</td></tr>
+      </tbody><tr><td contenteditable="true">05</td><td contenteditable="true">Pão&nbsp;</td><td contenteditable="true">1kg</td><td contenteditable="true">10 PC</td></tr><tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr></table>
+    </div>
+    <button class="add-row" onclick="addTableRow('equip-table',4)">+ adicionar item</button>
+
+    <div class="two-col" style="margin-top:16px;">
+      <div class="table-wrap">
+        <table>
+          <tbody><tr><td class="lbl-cell">Carga Leve</td><td contenteditable="true"></td></tr>
+          <tr><td class="lbl-cell">Carga Média</td><td contenteditable="true"></td></tr>
+          <tr><td class="lbl-cell">Carga Pesada</td><td contenteditable="true"></td></tr>
+        </tbody></table>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tbody><tr><th>P.C</th><th>P.P</th><th>P.O</th><th>P.L</th></tr>
+          <tr><td contenteditable="true">90</td><td contenteditable="true">8</td><td contenteditable="true">33</td><td contenteditable="true"></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="box-label">Magias</div>
+    <div class="info-grid" style="margin-bottom:14px;">
+      <div class="field"><span class="k">Classe Conjuradora</span><span class="v" contenteditable="true"></span></div>
+      <div class="field"><span class="k">Atributo Chave</span><span class="v" contenteditable="true"></span></div>
+      <div class="field"><span class="k">Nível de Conjurador</span><span class="v" contenteditable="true"></span></div>
+      <div class="field"><span class="k">CD de Resistência</span><span class="v" contenteditable="true">10 + Atributo</span></div>
+    </div>
+
+    <div class="box-label">Espaços de Magia <span style="opacity:0.6; font-size:0.65rem; text-transform:none; letter-spacing:0;">(clique num ponto pra marcar como gasto · "+" adiciona espaço)</span></div>
+    <div class="slots-row" id="spell-slots">
+      <!-- grupos de nível inseridos via JS -->
+    <div class="slot-group">
+      <div class="lvl">Nível 0</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 1</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 2</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 3</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 4</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 5</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 6</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 7</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 8</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div><div class="slot-group">
+      <div class="lvl">Nível 9</div>
+      <div class="pips"><span class="pip filled" onclick="this.classList.toggle('filled')"></span><span class="pip filled" onclick="this.classList.toggle('filled')"></span></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    </div></div>
+
+    <div class="box-label" style="margin-top:16px;">Magias Conhecidas / Preparadas</div>
+    <div class="textbox" style="min-height:90px;" contenteditable="true"></div>
+
+    <div class="two-col" style="margin-top:16px;">
+      <div class="field"><span class="k">Domínio de Clérigo</span><span class="v" contenteditable="true">-</span></div>
+      <div class="field"><span class="k">Domínio de Clérigo</span><span class="v" contenteditable="true">-</span></div>
+    </div>
+  </div>
+
+  <!-- PAGE 5 — HISTÓRIA & NPCs -->
+  <div class="page">
+    <div class="page-title">Dossiê · Crônicas &amp; Contatos</div>
+
+    <div class="box-label">História — Dados Importantes da Campanha</div>
+    <div class="textbox" style="min-height:140px;" contenteditable="true"></div>
+
+    <div class="divider"></div>
+
+    <div class="box-label">NPC's Encontrados</div>
+    <table id="npc-table" style="margin-bottom:8px;">
+      <tbody><tr><th style="width:70px;">Retrato</th><th>Nome</th><th>Relação</th><th>Informações</th></tr>
+      <tr>
+        <td style="text-align:center;">
+          <label class="npc-thumb" id="frame-npc-0" for="upload-npc-0">
+            <span>foto</span>
+            <input type="file" id="upload-npc-0" accept="image/*" onchange="loadImage(this,'frame-npc-0')">
+          </label>
+        </td>
+        <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
+      </tr>
+    </tbody></table>
+    <button class="add-row" onclick="addNPCRow()">+ adicionar NPC</button>
+
+    <div class="divider"></div>
+
+    <div class="box-label">Equipamentos &amp; Itens Encontrados</div>
+    <div class="table-wrap">
+      <table id="loot-table">
+        <tbody><tr><th>U.N</th><th>Item</th><th>Peso</th><th>Custo</th></tr>
+        <tr><td contenteditable="true">01</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+        <tr><td contenteditable="true">01</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      </tbody></table>
+    </div>
+    <button class="add-row" onclick="addTableRow('loot-table',4)">+ adicionar item</button>
+  </div>
+
+  <footer>Nenhuma trincheira é segura</footer>
+</div><script id="main-script">
+const skillData = [
+  ["Abrir fechaduras","N","Des"],["Acrobacias *","N","Des"],["Adestrar Animais","N","Car"],
+  ["Arte da fuga *","S","Des"],["Atuação","S","Car"],["Avaliação","S","Int"],["Blefar","S","Car"],
+  ["Cavalgar","S","Des"],["Concentração","S","Con"],["Conhecimento (arcano)","N","Int"],
+  ["Conhecimento (Arquitetura & Engenharia)","N","Int"],["Conhecimento (Geografia)","N","Int"],
+  ["Conhecimento (História)","N","Int"],["Conhecimento (Local)","N","Int"],["Conhecimento (Masmorras)","N","Int"],
+  ["Conhecimento (Natureza)","N","Int"],["Conhecimento (Nobreza e Realeza)","N","Int"],
+  ["Conhecimento (Planos)","N","Int"],["Conhecimento (Religião)","N","Int"],["Cura","S","Sab"],
+  ["Decifrar Escrita","N","Int"],["Diplomacia","S","Apr"],["Disfarces","S","Car"],["Equilíbrio *","S","Des"],
+  ["Escalar *","S","For"],["Esconder-se *","S","Des"],["Falar Idioma","N","-"],["Falsificação","S","Int"],
+  ["Furtividade *","S","Des"],["Hab. Sexual *","S","Car"],["Ident. Magia","N","Int"],["Intimidação","S","Car"],
+  ["Natação **","S","For"],["Observar","S","Sab"],["Obter Informação","S","Car"],["Ofícios","S","Int"],
+  ["Operar Mecanismo","N","Int"],["Ouvir","S","Sab"],["Prestidigitação *","N","Des"],["Procurar","S","Int"],
+  ["Profissão","N","Sab"],["Saltar *","S","For"],["Sentir Motivação","S","Sab"],["Sobrevivência","S","Sab"],
+  ["Usar Cordas","S","Des"],["Usar Instrumento Mágico","S","Car"]
+];
+
+function buildSkills(){
+  const table = document.getElementById('pericias-table');
+  if(table.rows.length > 1) return;
+  skillData.forEach(([nome, classe, atributo]) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="lbl-cell">${nome}</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">${classe}</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true">${atributo}</td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>`;
+    table.appendChild(tr);
+  });
+}
+buildSkills();
+
+function buildSpellSlots(){
+  const container = document.getElementById('spell-slots');
+  if(!container || container.children.length > 0) return;
+  for(let lvl = 0; lvl <= 9; lvl++){
+    const group = document.createElement('div');
+    group.className = 'slot-group';
+    group.innerHTML = `
+      <div class="lvl">Nível ${lvl}</div>
+      <div class="pips"></div>
+      <button class="pip-add" onclick="addPip(this)">+</button>
+    `;
+    const pipsDiv = group.querySelector('.pips');
+    const defaultCount = lvl === 0 ? 4 : 2;
+    for(let i = 0; i < defaultCount; i++){
+      pipsDiv.appendChild(makePip());
+    }
+    container.appendChild(group);
+  }
+}
+function makePip(){
+  const pip = document.createElement('span');
+  pip.className = 'pip filled';
+  pip.setAttribute('onclick', "this.classList.toggle('filled')");
+  return pip;
+}
+function addPip(btn){
+  const pipsDiv = btn.closest('.slot-group').querySelector('.pips');
+  pipsDiv.appendChild(makePip());
+}
+buildSpellSlots();
+
+function loadImage(input, frameId){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const frame = document.getElementById(frameId);
+    frame.style.backgroundImage = "url(" + e.target.result + ")";
+    const span = frame.querySelector('span');
+    if(span) span.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function addRow(listId){
+  const list = document.getElementById(listId);
+  const li = document.createElement('li');
+  li.innerHTML = '<span class="star">✦</span><span class="txt" contenteditable="true"></span>';
+  list.appendChild(li);
+  li.querySelector('.txt').focus();
+}
+
+function addTableRow(tableId, cols){
+  const table = document.getElementById(tableId);
+  const tr = document.createElement('tr');
+  let html = '';
+  for(let i=0;i<cols;i++){ html += '<td contenteditable="true"></td>'; }
+  tr.innerHTML = html;
+  table.appendChild(tr);
+}
+
+let npcCount = 0;
+function addNPCRow(){
+  npcCount++;
+  const table = document.getElementById('npc-table');
+  const tr = document.createElement('tr');
+  const frameId = 'frame-npc-' + npcCount;
+  const inputId = 'upload-npc-' + npcCount;
+  tr.innerHTML = `<td style="text-align:center;">
+      <label class="npc-thumb" id="${frameId}" for="${inputId}">
+        <span>foto</span>
+        <input type="file" id="${inputId}" accept="image/*" onchange="loadImage(this,'${frameId}')">
+      </label>
+    </td>
+    <td contenteditable="true"></td>
+    <td contenteditable="true"></td>
+    <td contenteditable="true"></td>`;
+  table.appendChild(tr);
+}
+
+function saveHTML(){
+  const clone = document.getElementById('sheet').cloneNode(true);
+  const styleTag = document.querySelector('style').outerHTML;
+  const fontLinks = document.querySelectorAll('link');
+  let linkTags = '';
+  fontLinks.forEach(l => linkTags += l.outerHTML);
+  const toolbarHTML = document.querySelector('.toolbar').outerHTML;
+  const scriptContent = document.getElementById('main-script').outerHTML;
+  const fullHtml = "<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><title>Ficha de Personagem — D&D 3.5</title>"
+    + linkTags + styleTag + "</head><body>"
+    + toolbarHTML
+    + clone.outerHTML
+    + scriptContent
+    + "</body></html>";
+  const blob = new Blob([fullHtml], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ficha_personagem.html';
+  a.click();
+}
+</script></body></html>
